@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Globe, Users, Activity, Home, Briefcase, Heart } from 'lucide-react'
+import { Globe, Users, Activity, Home, Briefcase, Heart, Settings } from 'lucide-react'
 
 const ActivityParticipationPage = () => {
   return (
@@ -54,6 +54,91 @@ const ActivityParticipationPage = () => {
           <Link to="/copm" className="btn">
             COPM 평가 시작
           </Link>
+        </div>
+
+        <div className="card">
+          <div className="text-center mb-4">
+            <Home size={48} color="#17a2b8" />
+            <h3>K-MBI 평가</h3>
+            <p>한국어 수정된 바르텔 지수입니다.</p>
+          </div>
+          <div className="mb-4">
+            <h4>평가 영역:</h4>
+            <ul style={{ textAlign: 'left', paddingLeft: '20px' }}>
+              <li>식사, 목욕, 세면</li>
+              <li>옷입기, 대소변조절</li>
+              <li>화장실사용, 이동</li>
+              <li>보행, 계단오르기</li>
+            </ul>
+          </div>
+          <Link to="/k-mbi" className="btn">
+            K-MBI 평가 시작
+          </Link>
+        </div>
+
+        <div className="card">
+          <div className="text-center mb-4">
+            <Settings size={48} color="#6c757d" />
+            <h3>K-IADL 평가</h3>
+            <p>한국어 수단적 일상생활활동 평가입니다.</p>
+          </div>
+          <div className="mb-4">
+            <h4>평가 영역:</h4>
+            <ul style={{ textAlign: 'left', paddingLeft: '20px' }}>
+              <li>전화사용, 쇼핑</li>
+              <li>음식준비, 집안일</li>
+              <li>세탁, 교통수단이용</li>
+              <li>약물관리, 금전관리</li>
+            </ul>
+          </div>
+          <Link to="/k-iadl" className="btn">
+            K-IADL 평가 시작
+          </Link>
+        </div>
+
+        <div className="card">
+          <div className="text-center mb-4">
+            <Users size={48} color="#e83e8c" />
+            <h3>FIM 평가</h3>
+            <p>기능적 독립성 측정 도구입니다.</p>
+          </div>
+          <div className="mb-4">
+            <h4>평가 영역:</h4>
+            <ul style={{ textAlign: 'left', paddingLeft: '20px' }}>
+              <li>운동기능 (13개 항목)</li>
+              <li>인지기능 (5개 항목)</li>
+              <li>7점 척도 평가</li>
+              <li>126점 만점</li>
+            </ul>
+          </div>
+          <Link to="/fim" className="btn">
+            FIM 평가 시작
+          </Link>
+        </div>
+
+        <div className="card">
+          <div className="text-center mb-4">
+            <Users size={48} color="#6f42c1" />
+            <h3>K-COSA 평가</h3>
+            <p>아동용 작업 참여 평가 도구입니다.</p>
+          </div>
+          <div className="mb-4">
+            <h4>평가 영역:</h4>
+            <ul style={{ textAlign: 'left', paddingLeft: '20px' }}>
+              <li>일상생활활동 (ADL)</li>
+              <li>수단적 일상생활활동 (IADL)</li>
+              <li>여가활동</li>
+              <li>사회적 참여</li>
+            </ul>
+          </div>
+          <a 
+            href="https://child-participation.kr/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn"
+          >
+            K-COSA 평가 시작
+          </a>
         </div>
 
         <div className="card">

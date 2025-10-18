@@ -45,8 +45,10 @@ const LandingPage = () => {
             <ul style={{ textAlign: 'left', paddingLeft: '20px' }}>
               <li>WHODAS 2.0 (종합 장애 평가)</li>
               <li>COPM (개인 맞춤형 평가)</li>
-              <li>일상생활활동 (ADL)</li>
-              <li>수단적 일상생활활동 (IADL)</li>
+              <li>FIM (기능적 독립성)</li>
+              <li>K-MBI (일상생활활동)</li>
+              <li>K-IADL (수단적 일상생활활동)</li>
+              <li>K-COSA (아동용 참여 평가)</li>
               <li>직업 활동</li>
               <li>여가 활동</li>
               <li>이동능력</li>

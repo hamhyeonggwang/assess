@@ -9,6 +9,11 @@ import MMSEKPage from './pages/MMSEKPage'
 import MMSEDSPage from './pages/MMSEDSPage'
 import WHODASPage from './pages/WHODASPage'
 import COPMPage from './pages/COPMPage'
+import KMBIPage from './pages/KMBIPage'
+import KIADLPage from './pages/KIADLPage'
+import MOCAPage from './pages/MOCAPage'
+import FIMPage from './pages/FIMPage'
+import CDTPage from './pages/CDTPage'
 
 function App() {
   return (
@@ -24,6 +29,11 @@ function App() {
           <Route path="/mmse-ds" element={<MMSEDSPage />} />
           <Route path="/whodas" element={<WHODASPage />} />
           <Route path="/copm" element={<COPMPage />} />
+          <Route path="/k-mbi" element={<KMBIPage />} />
+          <Route path="/k-iadl" element={<KIADLPage />} />
+          <Route path="/moca" element={<MOCAPage />} />
+          <Route path="/fim" element={<FIMPage />} />
+          <Route path="/cdt" element={<CDTPage />} />
         </Routes>
       </div>
     </Router>
