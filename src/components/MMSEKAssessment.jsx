@@ -21,64 +21,97 @@ const MMSEKAssessment = () => {
       title: '시간 지남력 (5점)',
       questions: [
         { id: 'year', text: '올해는 몇 년도입니까?', points: 1 },
-        { id: 'season', text: '지금은 몇 계절입니까?', points: 1 },
         { id: 'month', text: '지금은 몇 월입니까?', points: 1 },
         { id: 'date', text: '오늘은 몇 일입니까?', points: 1 },
-        { id: 'day', text: '오늘은 무슨 요일입니까?', points: 1 }
+        { id: 'day', text: '오늘은 무슨 요일입니까?', points: 1 },
+        { id: 'season', text: '지금은 어떤 계절입니까?', points: 1 }
       ]
     },
     {
       id: 'place_orientation',
       title: '장소 지남력 (5점)',
       questions: [
-        { id: 'country', text: '지금 어느 나라에 있습니까?', points: 1 },
-        { id: 'city', text: '지금 어느 도시에 있습니까?', points: 1 },
-        { id: 'district', text: '지금 어느 구(군)에 있습니까?', points: 1 },
-        { id: 'hospital', text: '지금 어느 병원에 있습니까?', points: 1 },
-        { id: 'floor', text: '지금 몇 층에 있습니까?', points: 1 }
+        { id: 'country', text: '이 나라는 어디입니까?', points: 1 },
+        { id: 'province', text: '이 시/도는 어디입니까?', points: 1 },
+        { id: 'place_type', text: '이곳은 어떤 장소입니까?', points: 1 },
+        { id: 'place_name', text: '현재 장소의 이름은 무엇입니까?', points: 1 },
+        { id: 'floor', text: '여기는 몇 층입니까?', points: 1 }
       ]
     },
     {
       id: 'registration',
       title: '기억 등록 (3점)',
       questions: [
-        { id: 'word1', text: '다음 세 단어를 기억해 주세요: "자동차, 기차, 비행기"', points: 0, instruction: '단어를 말한 후 "이 세 단어를 기억해 두세요"라고 말하세요.' },
-        { id: 'word2', text: '자동차', points: 1 },
-        { id: 'word3', text: '기차', points: 1 },
-        { id: 'word4', text: '비행기', points: 1 }
+        { id: 'instruction', text: '서로 관련 없는 세 개의 단어를 천천히 말하고, 이를 따라 말하게 합니다.', points: 0, instruction: '비행기, 연필, 소나무를 말한 후 "이 세 단어를 기억해 두세요"라고 말하세요.' },
+        { id: 'word1', text: '비행기', points: 1 },
+        { id: 'word2', text: '연필', points: 1 },
+        { id: 'word3', text: '소나무', points: 1 }
       ]
     },
     {
       id: 'attention',
       title: '주의집중 및 계산 (5점)',
       questions: [
-        { id: 'subtract1', text: '100에서 7을 빼면?', points: 1 },
-        { id: 'subtract2', text: '93에서 7을 빼면?', points: 1 },
-        { id: 'subtract3', text: '86에서 7을 빼면?', points: 1 },
-        { id: 'subtract4', text: '79에서 7을 빼면?', points: 1 },
-        { id: 'subtract5', text: '72에서 7을 빼면?', points: 1 }
+        { id: 'subtract1', text: '100에서 7을 빼면 얼마입니까?', points: 1 },
+        { id: 'subtract2', text: '그 수에서 다시 7을 빼면 얼마입니까?', points: 1 },
+        { id: 'subtract3', text: '그 수에서 다시 7을 빼면 얼마입니까?', points: 1 },
+        { id: 'subtract4', text: '그 수에서 다시 7을 빼면 얼마입니까?', points: 1 },
+        { id: 'subtract5', text: '그 수에서 다시 7을 빼면 얼마입니까?', points: 1 }
       ]
     },
     {
       id: 'recall',
       title: '기억 회상 (3점)',
       questions: [
-        { id: 'recall1', text: '앞서 말씀드린 세 단어 중 첫 번째는?', points: 1 },
-        { id: 'recall2', text: '앞서 말씀드린 세 단어 중 두 번째는?', points: 1 },
-        { id: 'recall3', text: '앞서 말씀드린 세 단어 중 세 번째는?', points: 1 }
+        { id: 'recall1', text: '앞서 제시한 세 단어를 기억해보세요:', points: 1 },
+        { id: 'recall2', text: '비행기', points: 1 },
+        { id: 'recall3', text: '연필', points: 1 },
+        { id: 'recall4', text: '소나무', points: 1 }
       ]
     },
     {
-      id: 'language',
-      title: '언어 기능 (9점)',
+      id: 'naming',
+      title: '이름 대기 (2점)',
       questions: [
-        { id: 'naming1', text: '이것은 무엇입니까? (연필 보여주기)', points: 1 },
-        { id: 'naming2', text: '이것은 무엇입니까? (시계 보여주기)', points: 1 },
-        { id: 'repeat', text: '"아무것도, 만약, 하지만"을 따라 말해보세요.', points: 1 },
-        { id: 'command1', text: '종이를 접어서 바닥에 놓으세요.', points: 1 },
-        { id: 'command2', text: '"눈을 감으세요"라고 쓰세요.', points: 1 },
-        { id: 'command3', text: '이 문장을 따라 쓰세요: "나는 집에 가겠습니다."', points: 1 },
-        { id: 'draw', text: '이 그림을 그려보세요. (두 개의 교차하는 오각형)', points: 1 }
+        { id: 'naming1', text: '(손목) 시계를 보여주고 이름을 묻습니다.', points: 1 },
+        { id: 'naming2', text: '볼펜을 보여주고 이름을 묻습니다.', points: 1 }
+      ]
+    },
+    {
+      id: 'command',
+      title: '명령 시행 (3점)',
+      questions: [
+        { id: 'command1', text: '종이를 오른손으로 잡고', points: 1 },
+        { id: 'command2', text: '반으로 접어서', points: 1 },
+        { id: 'command3', text: '무릎 위에 올려놓으세요.', points: 1 }
+      ]
+    },
+    {
+      id: 'repetition',
+      title: '따라 말하기 (1점)',
+      questions: [
+        { id: 'repeat', text: '"백문이 불여일견"을 따라 말해보세요.', points: 1 }
+      ]
+    },
+    {
+      id: 'reading',
+      title: '읽고 그대로 하기 (1점)',
+      questions: [
+        { id: 'read', text: '"눈을 감으세요"라는 문장을 읽고 그대로 수행하게 합니다.', points: 1 }
+      ]
+    },
+    {
+      id: 'construction',
+      title: '시각적 구성 (1점)',
+      questions: [
+        { id: 'draw', text: '겹쳐 있는 두 개의 오각형을 보고 그대로 그리게 합니다.', points: 1 }
+      ]
+    },
+    {
+      id: 'judgment',
+      title: '이해 및 판단 (1점)',
+      questions: [
+        { id: 'judgment1', text: '옷은 왜 빨아서 입습니까?', points: 1 }
       ]
     }
   ]
