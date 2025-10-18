@@ -5,6 +5,7 @@ import { exportToGoogleSheets } from '../utils/googleSheets'
 const MMSEKAssessment = () => {
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState({})
+  const [patientResponses, setPatientResponses] = useState({})
   const [patientInfo, setPatientInfo] = useState({
     name: '',
     age: '',
@@ -89,6 +90,13 @@ const MMSEKAssessment = () => {
     }))
   }
 
+  const handleResponseChange = (questionId, response) => {
+    setPatientResponses(prev => ({
+      ...prev,
+      [questionId]: response
+    }))
+  }
+
   const calculateScore = () => {
     let totalScore = 0
     questions.forEach(section => {
@@ -127,6 +135,7 @@ const MMSEKAssessment = () => {
     const result = {
       patientInfo,
       answers,
+      patientResponses,
       score,
       interpretation,
       timestamp: new Date().toISOString()
@@ -161,6 +170,24 @@ const MMSEKAssessment = () => {
     doc.text(`Total Score: ${score}/30 points`, 20, 110)
     doc.text(`Interpretation: ${interpretation.level}`, 20, 120)
     
+    // 문항별 답변 내용
+    let yPos = 140
+    doc.text('Question Responses:', 20, yPos)
+    yPos += 10
+    
+    questions.forEach(section => {
+      doc.text(`${section.title}:`, 20, yPos)
+      yPos += 6
+      
+      section.questions.forEach(question => {
+        const response = patientResponses[question.id] || 'No response'
+        const isCorrect = answers[question.id] === 'correct'
+        doc.text(`  ${question.id}: "${response}" (${isCorrect ? 'Correct' : 'Incorrect'})`, 20, yPos)
+        yPos += 6
+      })
+      yPos += 3
+    })
+    
     doc.save(`MMSE-K_${patientInfo.name}_${patientInfo.date}.pdf`)
   }
 
@@ -171,6 +198,7 @@ const MMSEKAssessment = () => {
     const result = {
       patientInfo,
       answers,
+      patientResponses,
       score,
       interpretation,
       timestamp: new Date().toISOString()
@@ -304,6 +332,34 @@ const MMSEKAssessment = () => {
             </div>
           </div>
 
+          <div className="card mt-4">
+            <h4>문항별 답변 내용</h4>
+            {questions.map((section, sectionIndex) => (
+              <div key={sectionIndex} className="mb-4">
+                <h5>{section.title}</h5>
+                {section.questions.map((question, questionIndex) => {
+                  const response = patientResponses[question.id] || '답변 없음'
+                  const isCorrect = answers[question.id] === 'correct'
+                  return (
+                    <div key={questionIndex} className="mb-3 p-3" style={{ 
+                      backgroundColor: isCorrect ? '#d4edda' : '#f8d7da', 
+                      border: `1px solid ${isCorrect ? '#c3e6cb' : '#f5c6cb'}`,
+                      borderRadius: '4px'
+                    }}>
+                      <p><strong>{question.text}</strong></p>
+                      <p><strong>답변:</strong> {response}</p>
+                      <p><strong>정답 여부:</strong> 
+                        <span style={{ color: isCorrect ? '#28a745' : '#dc3545', fontWeight: 'bold' }}>
+                          {isCorrect ? ' 정답' : ' 오답'}
+                        </span>
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+
           <div className="text-center mt-4">
             <button className="btn" onClick={generatePDF}>
               <Download size={20} />
@@ -346,6 +402,20 @@ const MMSEKAssessment = () => {
                   </div>
                 )}
               </label>
+              
+              {/* 환자 답변 입력 */}
+              <div className="mb-3">
+                <label className="form-label">환자 답변:</label>
+                <textarea
+                  className="form-input"
+                  rows="2"
+                  placeholder="환자의 답변을 입력하세요..."
+                  value={patientResponses[question.id] || ''}
+                  onChange={(e) => handleResponseChange(question.id, e.target.value)}
+                />
+              </div>
+              
+              {/* 정/오답 선택 */}
               <div className="radio-group">
                 <div 
                   className={`radio-item ${answers[question.id] === 'correct' ? 'selected' : ''}`}
