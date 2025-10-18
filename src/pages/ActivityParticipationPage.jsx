@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Globe, Users, Activity, Home, Briefcase, Heart, Settings } from 'lucide-react'
+import { Globe, Users, Activity, Home, Briefcase, Heart, Settings, Baby } from 'lucide-react'
 
 const ActivityParticipationPage = () => {
   return (
@@ -139,6 +139,27 @@ const ActivityParticipationPage = () => {
           >
             K-COSA 평가 시작
           </a>
+        </div>
+
+        <div className="card">
+          <div className="text-center mb-4">
+            <Baby size={48} color="#e83e8c" />
+            <h3>SMS 평가</h3>
+            <p>사회성숙도 검사입니다.</p>
+          </div>
+          <div className="mb-4">
+            <h4>평가 영역:</h4>
+            <ul style={{ textAlign: 'left', paddingLeft: '20px' }}>
+              <li>자가관리 (식사, 목욕, 옷입기)</li>
+              <li>이동 (걷기, 계단오르기)</li>
+              <li>작업 (놀이, 집안일, 학습)</li>
+              <li>의사소통 (말하기, 듣기, 읽기, 쓰기)</li>
+              <li>사회화 (사회적관계, 협력, 책임감)</li>
+            </ul>
+          </div>
+          <Link to="/sms" className="btn">
+            SMS 평가 시작
+          </Link>
         </div>
 
         <div className="card">

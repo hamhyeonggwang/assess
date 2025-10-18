@@ -15,7 +15,7 @@ const FIMAssessment = () => {
   const [scores, setScores] = useState({
     // 운동기능 (13개 항목)
     식사: 0,
-     years old면: 0,
+    세면: 0,
     목욕: 0,
     상의입기: 0,
     하의입기: 0,

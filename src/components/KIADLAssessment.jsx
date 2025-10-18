@@ -16,7 +16,7 @@ const KIADLAssessment = () => {
     쇼핑: 0,
     음식준비: 0,
     집안일: 0,
-     years old탁: 0,
+    세탁: 0,
     교통수단이용: 0,
     약물관리: 0,
     금전관리: 0
@@ -27,7 +27,7 @@ const KIADLAssessment = () => {
     { key: '쇼핑', name: '쇼핑', description: '필요한 물건을 사는 능력' },
     { key: '음식준비', name: '음식준비', description: '음식을 준비하는 능력' },
     { key: '집안일', name: '집안일', description: '집안 청소 및 정리 능력' },
-    { key: ' years old탁', name: ' years old탁', description: ' years old탁물을 관리하는 능력' },
+    { key: '세탁', name: '세탁', description: '세탁물을 관리하는 능력' },
     { key: '교통수단이용', name: '교통수단이용', description: '대중교통을 이용하는 능력' },
     { key: '약물관리', name: '약물관리', description: '약물을 올바르게 복용하는 능력' },
     { key: '금전관리', name: '금전관리', description: '돈을 관리하고 계산하는 능력' }

@@ -14,7 +14,7 @@ const KMBIAssessment = () => {
   const [scores, setScores] = useState({
     식사: 0,
     목욕: 0,
-     years old면: 0,
+    세면: 0,
     옷입기: 0,
     대변조절: 0,
     소변조절: 0,

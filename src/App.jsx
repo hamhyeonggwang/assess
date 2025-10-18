@@ -14,6 +14,7 @@ import KIADLPage from './pages/KIADLPage'
 import MOCAPage from './pages/MOCAPage'
 import FIMPage from './pages/FIMPage'
 import CDTPage from './pages/CDTPage'
+import SMSPage from './pages/SMSPage'
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/moca" element={<MOCAPage />} />
           <Route path="/fim" element={<FIMPage />} />
           <Route path="/cdt" element={<CDTPage />} />
+          <Route path="/sms" element={<SMSPage />} />
         </Routes>
       </div>
     </Router>
