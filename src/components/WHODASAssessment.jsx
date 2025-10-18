@@ -86,11 +86,11 @@ const WHODASAssessment = () => {
   ]
 
   const responseOptions = [
-    { value: 0, label: '전혀 어려움 없음' },
-    { value: 1, label: '약간의 어려움' },
-    { value: 2, label: '보통의 어려움' },
-    { value: 3, label: '심한 어려움' },
-    { value: 4, label: '극심한 어려움 또는 전혀 할 수 없음' }
+    { value: 0, label: '없음' },
+    { value: 1, label: '약간' },
+    { value: 2, label: '중간' },
+    { value: 3, label: '심한' },
+    { value: 4, label: '극심한 또는 할 수 없음' }
   ]
 
   const updateAnswer = (questionId, value) => {
@@ -210,7 +210,8 @@ const WHODASAssessment = () => {
     
     questions12.forEach((question, index) => {
       const score = answers[question.id] || 0
-      doc.text(`${question.id}: ${score} points`, 20, yPos)
+      const scoreLabel = responseOptions.find(opt => opt.value === score)?.label || '미응답'
+      doc.text(`${question.id}: ${score}점 (${scoreLabel})`, 20, yPos)
       yPos += 6
     })
     
@@ -421,7 +422,11 @@ const WHODASAssessment = () => {
                 <tr>
                   <th>문항</th>
                   <th>내용</th>
-                  <th>점수</th>
+                  <th>없음</th>
+                  <th>약간</th>
+                  <th>중간</th>
+                  <th>심한</th>
+                  <th>극심한 또는 할 수 없음</th>
                 </tr>
               </thead>
               <tbody>
@@ -429,20 +434,18 @@ const WHODASAssessment = () => {
                   <tr key={question.id}>
                     <td>{question.id}</td>
                     <td>{question.text}</td>
-                    <td>
-                      <select
-                        className="form-select"
-                        value={answers[question.id] || ''}
-                        onChange={(e) => updateAnswer(question.id, parseInt(e.target.value))}
-                      >
-                        <option value="">선택하세요</option>
-                        {responseOptions.map(option => (
-                          <option key={option.value} value={option.value}>
-                            {option.value} - {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
+                    {responseOptions.map(option => (
+                      <td key={option.value} className="text-center">
+                        <input
+                          type="radio"
+                          name={`question_${question.id}`}
+                          value={option.value}
+                          checked={answers[question.id] === option.value}
+                          onChange={(e) => updateAnswer(question.id, parseInt(e.target.value))}
+                          className="form-radio"
+                        />
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
