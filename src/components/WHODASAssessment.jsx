@@ -31,7 +31,7 @@ const WHODASAssessment = () => {
       id: 'mobility',
       title: '이동 영역 (Mobility)',
       questions: [
-        { id: 'mob1', text: '서 있는 자세를 유지하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
+        { id: 'mob1', text: '서 있는 자 years old를 유지하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
         { id: 'mob2', text: '집 안에서 움직이는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
         { id: 'mob3', text: '집 밖으로 나가는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
         { id: 'mob4', text: '집에서 멀리 떨어진 곳까지 가는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] }
@@ -154,32 +154,35 @@ const WHODASAssessment = () => {
     }
     
     localStorage.setItem('whodas-result', JSON.stringify(result))
-    alert(`WHODAS 2.0 평가가 완료되었습니다!\n전체 점수: ${overallScore}\n장애 수준: ${severity.level}`)
+    alert(`WHODAS 2.0 평가가 완료되었습니다!\n전체  points수: ${overallScore}\n장애 Level: ${severity.level}`)
   }
 
-  const generatePDF = () => {
-    const { jsPDF } = require('jspdf')
+  const generatePDF = async () => {
+    const { jsPDF } = await import('jspdf')
     const doc = new jsPDF()
+    
+    // 한글 폰트 설정
+    doc.setFont('helvetica')
     
     const overallScore = calculateOverallScore()
     const severity = getSeverityLevel(overallScore)
     
     doc.setFontSize(16)
-    doc.text('WHODAS 2.0 평가 결과', 20, 20)
+    doc.text('WHODAS 2.0 Assessment Results', 20, 20)
     
     doc.setFontSize(12)
-    doc.text(`환자명: ${patientInfo.name}`, 20, 40)
-    doc.text(`나이: ${patientInfo.age}세`, 20, 50)
-    doc.text(`성별: ${patientInfo.gender}`, 20, 60)
-    doc.text(`교육수준: ${patientInfo.education}`, 20, 70)
-    doc.text(`평가일: ${patientInfo.date}`, 20, 80)
-    doc.text(`평가자: ${patientInfo.evaluator}`, 20, 90)
+    doc.text(`Patient Name: ${patientInfo.name}`, 20, 40)
+    doc.text(`Age: ${patientInfo.age} years old`, 20, 50)
+    doc.text(`Gender: ${patientInfo.gender}`, 20, 60)
+    doc.text(`Education: ${patientInfo.education}`, 20, 70)
+    doc.text(`Assessment Date: ${patientInfo.date}`, 20, 80)
+    doc.text(`Evaluator: ${patientInfo.evaluator}`, 20, 90)
     
-    doc.text(`전체 점수: ${overallScore}`, 20, 110)
-    doc.text(`장애 수준: ${severity.level}`, 20, 120)
+    doc.text(`전체  points수: ${overallScore}`, 20, 110)
+    doc.text(`장애 Level: ${severity.level}`, 20, 120)
     
     let yPos = 140
-    doc.text('영역별 점수:', 20, yPos)
+    doc.text('영역별  points수:', 20, yPos)
     yPos += 10
     
     domains.forEach(domain => {
@@ -242,7 +245,7 @@ const WHODASAssessment = () => {
                 value={patientInfo.gender}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, gender: e.target.value }))}
               >
-                <option value="">선택하세요</option>
+                <option value="">선택하 years old요</option>
                 <option value="남성">남성</option>
                 <option value="여성">여성</option>
               </select>
@@ -254,7 +257,7 @@ const WHODASAssessment = () => {
                 value={patientInfo.education}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, education: e.target.value }))}
               >
-                <option value="">선택하세요</option>
+                <option value="">선택하 years old요</option>
                 <option value="무학">무학</option>
                 <option value="초등학교">초등학교</option>
                 <option value="중학교">중학교</option>
@@ -299,11 +302,11 @@ const WHODASAssessment = () => {
     return (
       <div className="container">
         <div className="card">
-          <h3 className="text-center mb-4">WHODAS 2.0 평가 결과</h3>
+          <h3 className="text-center mb-4">WHODAS 2.0 Assessment Results</h3>
           
           <div className="score-display">
             <div className="score-number">{overallScore}</div>
-            <div className="score-label">전체 점수</div>
+            <div className="score-label">전체  points수</div>
             <div style={{ color: severity.color, fontSize: '1.2rem', fontWeight: 'bold' }}>
               {severity.level} 장애
             </div>
@@ -313,14 +316,14 @@ const WHODASAssessment = () => {
             <div>
               <h4>환자 정보</h4>
               <p><strong>이름:</strong> {patientInfo.name}</p>
-              <p><strong>나이:</strong> {patientInfo.age}세</p>
-              <p><strong>성별:</strong> {patientInfo.gender}</p>
-              <p><strong>교육수준:</strong> {patientInfo.education}</p>
-              <p><strong>평가일:</strong> {patientInfo.date}</p>
-              <p><strong>평가자:</strong> {patientInfo.evaluator}</p>
+              <p><strong>Age:</strong> {patientInfo.age} years old</p>
+              <p><strong>Gender:</strong> {patientInfo.gender}</p>
+              <p><strong>Education:</strong> {patientInfo.education}</p>
+              <p><strong>Assessment Date:</strong> {patientInfo.date}</p>
+              <p><strong>Evaluator:</strong> {patientInfo.evaluator}</p>
             </div>
             <div>
-              <h4>영역별 점수</h4>
+              <h4>영역별  points수</h4>
               {domains.map((domain, index) => {
                 const domainScore = calculateDomainScore(domain)
                 return (
@@ -380,7 +383,7 @@ const WHODASAssessment = () => {
                     checked={answers[question.id] === '1'}
                     onChange={() => handleAnswerChange(question.id, '1')}
                   />
-                  <span>전혀 어려움 없음 (1점)</span>
+                  <span>전혀 어려움 없음 (1 points)</span>
                 </div>
                 <div 
                   className={`radio-item ${answers[question.id] === '2' ? 'selected' : ''}`}
@@ -392,7 +395,7 @@ const WHODASAssessment = () => {
                     checked={answers[question.id] === '2'}
                     onChange={() => handleAnswerChange(question.id, '2')}
                   />
-                  <span>약간 어려움 (2점)</span>
+                  <span>약간 어려움 (2 points)</span>
                 </div>
                 <div 
                   className={`radio-item ${answers[question.id] === '3' ? 'selected' : ''}`}
@@ -404,7 +407,7 @@ const WHODASAssessment = () => {
                     checked={answers[question.id] === '3'}
                     onChange={() => handleAnswerChange(question.id, '3')}
                   />
-                  <span>보통 어려움 (3점)</span>
+                  <span>보통 어려움 (3 points)</span>
                 </div>
                 <div 
                   className={`radio-item ${answers[question.id] === '4' ? 'selected' : ''}`}
@@ -416,7 +419,7 @@ const WHODASAssessment = () => {
                     checked={answers[question.id] === '4'}
                     onChange={() => handleAnswerChange(question.id, '4')}
                   />
-                  <span>많이 어려움 (4점)</span>
+                  <span>많이 어려움 (4 points)</span>
                 </div>
                 <div 
                   className={`radio-item ${answers[question.id] === '5' ? 'selected' : ''}`}
@@ -428,7 +431,7 @@ const WHODASAssessment = () => {
                     checked={answers[question.id] === '5'}
                     onChange={() => handleAnswerChange(question.id, '5')}
                   />
-                  <span>매우 많이 어려움 (5점)</span>
+                  <span>매우 많이 어려움 (5 points)</span>
                 </div>
               </div>
             </div>

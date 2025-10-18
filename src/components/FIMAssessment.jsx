@@ -15,7 +15,7 @@ const FIMAssessment = () => {
   const [scores, setScores] = useState({
     // 운동기능 (13개 항목)
     식사: 0,
-    세면: 0,
+     years old면: 0,
     목욕: 0,
     상의입기: 0,
     하의입기: 0,
@@ -38,7 +38,7 @@ const FIMAssessment = () => {
 
   const motorItems = [
     { key: '식사', name: '식사', description: '음식을 먹는 능력' },
-    { key: '세면', name: '세면', description: '세수, 양치질, 면도 등의 능력' },
+    { key: ' years old면', name: ' years old면', description: ' years old수, 양치질, 면도 등의 능력' },
     { key: '목욕', name: '목욕', description: '목욕이나 샤워를 하는 능력' },
     { key: '상의입기', name: '상의입기', description: '상의를 입고 벗는 능력' },
     { key: '하의입기', name: '하의입기', description: '하의를 입고 벗는 능력' },
@@ -61,13 +61,13 @@ const FIMAssessment = () => {
   ]
 
   const scoreOptions = [
-    { value: 1, label: '1점 - 완전도움 (0-25%)' },
-    { value: 2, label: '2점 - 최대도움 (25-50%)' },
-    { value: 3, label: '3점 - 중등도움 (50-75%)' },
-    { value: 4, label: '4점 - 최소도움 (75% 이상)' },
-    { value: 5, label: '5점 - 감독 (언어적 지시만)' },
-    { value: 6, label: '6점 - 수정된 독립 (보조기구 사용)' },
-    { value: 7, label: '7점 - 완전독립' }
+    { value: 1, label: '1 points - 완전도움 (0-25%)' },
+    { value: 2, label: '2 points - 최대도움 (25-50%)' },
+    { value: 3, label: '3 points - 중등도움 (50-75%)' },
+    { value: 4, label: '4 points - 최소도움 (75% 이상)' },
+    { value: 5, label: '5 points - 감독 (언어적 지시만)' },
+    { value: 6, label: '6 points - 수정된 독립 (보조기구 사용)' },
+    { value: 7, label: '7 points - 완전독립' }
   ]
 
   const updateScore = (item, score) => {
@@ -148,12 +148,15 @@ const FIMAssessment = () => {
     }
     
     localStorage.setItem('fim-result', JSON.stringify(result))
-    alert(`FIM 평가가 완료되었습니다!\n총점: ${totalScore}점\n수준: ${interpretation.level}`)
+    alert(`FIM 평가가 완료되었습니다!\nTotal Score: ${totalScore} points\nLevel: ${interpretation.level}`)
   }
 
-  const generatePDF = () => {
-    const { jsPDF } = require('jspdf')
+  const generatePDF = async () => {
+    const { jsPDF } = await import('jspdf')
     const doc = new jsPDF()
+    
+    // 한글 폰트 설정
+    doc.setFont('helvetica')
     
     const totalScore = calculateTotalScore()
     const motorScore = calculateMotorScore()
@@ -161,37 +164,37 @@ const FIMAssessment = () => {
     const interpretation = getScoreInterpretation(totalScore, motorScore, cognitiveScore)
     
     doc.setFontSize(16)
-    doc.text('FIM 평가 결과', 20, 20)
+    doc.text('FIM Assessment Results', 20, 20)
     
     doc.setFontSize(12)
-    doc.text(`환자명: ${patientInfo.name}`, 20, 40)
-    doc.text(`나이: ${patientInfo.age}세`, 20, 50)
-    doc.text(`성별: ${patientInfo.gender}`, 20, 60)
+    doc.text(`Patient Name: ${patientInfo.name}`, 20, 40)
+    doc.text(`Age: ${patientInfo.age} years old`, 20, 50)
+    doc.text(`Gender: ${patientInfo.gender}`, 20, 60)
     doc.text(`진단: ${patientInfo.diagnosis}`, 20, 70)
-    doc.text(`평가일: ${patientInfo.date}`, 20, 80)
-    doc.text(`평가자: ${patientInfo.evaluator}`, 20, 90)
+    doc.text(`Assessment Date: ${patientInfo.date}`, 20, 80)
+    doc.text(`Evaluator: ${patientInfo.evaluator}`, 20, 90)
     
-    doc.text(`총점: ${totalScore}점 (126점 만점)`, 20, 110)
-    doc.text(`운동기능: ${motorScore}점 (91점 만점)`, 20, 120)
-    doc.text(`인지기능: ${cognitiveScore}점 (35점 만점)`, 20, 130)
-    doc.text(`수준: ${interpretation.level}`, 20, 140)
-    doc.text(`설명: ${interpretation.description}`, 20, 150)
+    doc.text(`Total Score: ${totalScore} points (126 points 만 points)`, 20, 110)
+    doc.text(`운동기능: ${motorScore} points (91 points 만 points)`, 20, 120)
+    doc.text(`인지기능: ${cognitiveScore} points (35 points 만 points)`, 20, 130)
+    doc.text(`Level: ${interpretation.level}`, 20, 140)
+    doc.text(`Description: ${interpretation.description}`, 20, 150)
     
     let yPos = 170
-    doc.text('운동기능 항목별 점수:', 20, yPos)
+    doc.text('운동기능 항목별  points수:', 20, yPos)
     yPos += 10
     
     motorItems.forEach((item, index) => {
-      doc.text(`${item.name}: ${scores[item.key]}점`, 20, yPos)
+      doc.text(`${item.name}: ${scores[item.key]} points`, 20, yPos)
       yPos += 6
     })
     
     yPos += 5
-    doc.text('인지기능 항목별 점수:', 20, yPos)
+    doc.text('인지기능 항목별  points수:', 20, yPos)
     yPos += 10
     
     cognitiveItems.forEach((item, index) => {
-      doc.text(`${item.name}: ${scores[item.key]}점`, 20, yPos)
+      doc.text(`${item.name}: ${scores[item.key]} points`, 20, yPos)
       yPos += 6
     })
     
@@ -249,7 +252,7 @@ const FIMAssessment = () => {
                 value={patientInfo.gender}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, gender: e.target.value }))}
               >
-                <option value="">선택하세요</option>
+                <option value="">선택하 years old요</option>
                 <option value="남성">남성</option>
                 <option value="여성">여성</option>
               </select>
@@ -300,7 +303,7 @@ const FIMAssessment = () => {
           <h3 className="text-center mb-4">FIM 평가</h3>
           <p className="mb-4">
             Functional Independence Measure<br/>
-            각 항목에 대해 환자의 수행 능력을 평가해주세요.
+            각 항목에 대해 환자의 수행 능력을 평가해주 years old요.
           </p>
 
           <div className="mb-4">
@@ -320,7 +323,7 @@ const FIMAssessment = () => {
                         onChange={() => updateScore(item.key, option.value)}
                       />
                       <span className="form-radio-label">
-                        {option.value}점
+                        {option.value} points
                       </span>
                     </label>
                   ))}
@@ -344,7 +347,7 @@ const FIMAssessment = () => {
                         onChange={() => updateScore(item.key, option.value)}
                       />
                       <span className="form-radio-label">
-                        {option.value}점
+                        {option.value} points
                       </span>
                     </label>
                   ))}
@@ -383,23 +386,23 @@ const FIMAssessment = () => {
     return (
       <div className="container">
         <div className="card">
-          <h3 className="text-center mb-4">FIM 평가 결과</h3>
+          <h3 className="text-center mb-4">FIM Assessment Results</h3>
           
           <div className="score-display">
             <div className="score-number">{totalScore}</div>
-            <div className="score-label">총점 (126점 만점)</div>
+            <div className="score-label">총 points (126 points 만 points)</div>
           </div>
 
           <div className="grid grid-3 mt-4">
             <div className="card text-center">
               <h4>운동기능</h4>
               <div className="score-number-small">{motorScore}</div>
-              <div className="score-label-small">91점 만점</div>
+              <div className="score-label-small">91 points 만 points</div>
             </div>
             <div className="card text-center">
               <h4>인지기능</h4>
               <div className="score-number-small">{cognitiveScore}</div>
-              <div className="score-label-small">35점 만점</div>
+              <div className="score-label-small">35 points 만 points</div>
             </div>
             <div className="card text-center">
               <h4>독립성 수준</h4>
@@ -410,28 +413,28 @@ const FIMAssessment = () => {
           </div>
 
           <div className="card mt-4" style={{ backgroundColor: interpretation.color + '20', borderColor: interpretation.color }}>
-            <h4>평가 결과</h4>
-            <p><strong>수준:</strong> {interpretation.level}</p>
-            <p><strong>설명:</strong> {interpretation.description}</p>
+            <h4>Assessment Results</h4>
+            <p><strong>Level:</strong> {interpretation.level}</p>
+            <p><strong>Description:</strong> {interpretation.description}</p>
           </div>
 
           <div className="grid grid-2">
             <div>
               <h4>환자 정보</h4>
               <p><strong>이름:</strong> {patientInfo.name}</p>
-              <p><strong>나이:</strong> {patientInfo.age}세</p>
-              <p><strong>성별:</strong> {patientInfo.gender}</p>
+              <p><strong>Age:</strong> {patientInfo.age} years old</p>
+              <p><strong>Gender:</strong> {patientInfo.gender}</p>
               <p><strong>진단:</strong> {patientInfo.diagnosis}</p>
-              <p><strong>평가일:</strong> {patientInfo.date}</p>
-              <p><strong>평가자:</strong> {patientInfo.evaluator}</p>
+              <p><strong>Assessment Date:</strong> {patientInfo.date}</p>
+              <p><strong>Evaluator:</strong> {patientInfo.evaluator}</p>
             </div>
             <div>
-              <h4>항목별 점수</h4>
+              <h4>항목별  points수</h4>
               <div className="mb-3">
                 <h5>운동기능</h5>
                 {motorItems.map((item) => (
                   <p key={item.key} className="mb-1">
-                    <strong>{item.name}:</strong> {scores[item.key]}점
+                    <strong>{item.name}:</strong> {scores[item.key]} points
                   </p>
                 ))}
               </div>
@@ -439,7 +442,7 @@ const FIMAssessment = () => {
                 <h5>인지기능</h5>
                 {cognitiveItems.map((item) => (
                   <p key={item.key} className="mb-1">
-                    <strong>{item.name}:</strong> {scores[item.key]}점
+                    <strong>{item.name}:</strong> {scores[item.key]} points
                   </p>
                 ))}
               </div>

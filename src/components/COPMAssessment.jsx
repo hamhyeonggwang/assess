@@ -84,28 +84,31 @@ const COPMAssessment = () => {
     }
     
     localStorage.setItem('copm-result', JSON.stringify(result))
-    alert(`COPM 평가가 완료되었습니다!\n수행 점수: ${scores.performance}\n만족도 점수: ${scores.satisfaction}`)
+    alert(`COPM 평가가 완료되었습니다!\n수행  points수: ${scores.performance}\n만족도  points수: ${scores.satisfaction}`)
   }
 
-  const generatePDF = () => {
-    const { jsPDF } = require('jspdf')
+  const generatePDF = async () => {
+    const { jsPDF } = await import('jspdf')
     const doc = new jsPDF()
+    
+    // 한글 폰트 설정
+    doc.setFont('helvetica')
     
     const scores = calculateScores()
     
     doc.setFontSize(16)
-    doc.text('COPM 평가 결과', 20, 20)
+    doc.text('COPM Assessment Results', 20, 20)
     
     doc.setFontSize(12)
-    doc.text(`환자명: ${patientInfo.name}`, 20, 40)
-    doc.text(`나이: ${patientInfo.age}세`, 20, 50)
-    doc.text(`성별: ${patientInfo.gender}`, 20, 60)
-    doc.text(`교육수준: ${patientInfo.education}`, 20, 70)
-    doc.text(`평가일: ${patientInfo.date}`, 20, 80)
-    doc.text(`평가자: ${patientInfo.evaluator}`, 20, 90)
+    doc.text(`Patient Name: ${patientInfo.name}`, 20, 40)
+    doc.text(`Age: ${patientInfo.age} years old`, 20, 50)
+    doc.text(`Gender: ${patientInfo.gender}`, 20, 60)
+    doc.text(`Education: ${patientInfo.education}`, 20, 70)
+    doc.text(`Assessment Date: ${patientInfo.date}`, 20, 80)
+    doc.text(`Evaluator: ${patientInfo.evaluator}`, 20, 90)
     
-    doc.text(`수행 점수: ${scores.performance}`, 20, 110)
-    doc.text(`만족도 점수: ${scores.satisfaction}`, 20, 120)
+    doc.text(`수행  points수: ${scores.performance}`, 20, 110)
+    doc.text(`만족도  points수: ${scores.satisfaction}`, 20, 120)
     
     let yPos = 140
     doc.text('문제 영역별 평가:', 20, yPos)
@@ -113,7 +116,7 @@ const COPMAssessment = () => {
     
     problems.forEach((problem, index) => {
       doc.text(`${index + 1}. ${problem.area} - ${problem.activity}`, 20, yPos)
-      doc.text(`   수행: ${problem.performance}점, 만족도: ${problem.satisfaction}점`, 20, yPos + 5)
+      doc.text(`   수행: ${problem.performance} points, 만족도: ${problem.satisfaction} points`, 20, yPos + 5)
       yPos += 15
     })
     
@@ -165,7 +168,7 @@ const COPMAssessment = () => {
                 value={patientInfo.gender}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, gender: e.target.value }))}
               >
-                <option value="">선택하세요</option>
+                <option value="">선택하 years old요</option>
                 <option value="남성">남성</option>
                 <option value="여성">여성</option>
               </select>
@@ -177,7 +180,7 @@ const COPMAssessment = () => {
                 value={patientInfo.education}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, education: e.target.value }))}
               >
-                <option value="">선택하세요</option>
+                <option value="">선택하 years old요</option>
                 <option value="무학">무학</option>
                 <option value="초등학교">초등학교</option>
                 <option value="중학교">중학교</option>
@@ -235,7 +238,7 @@ const COPMAssessment = () => {
                   value={newProblem.area}
                   onChange={(e) => setNewProblem(prev => ({ ...prev, area: e.target.value }))}
                 >
-                  <option value="">선택하세요</option>
+                  <option value="">선택하 years old요</option>
                   {problemAreas.map(area => (
                     <option key={area} value={area}>{area}</option>
                   ))}
@@ -278,7 +281,7 @@ const COPMAssessment = () => {
                   </div>
                   <div className="grid grid-2">
                     <div>
-                      <label className="form-label">수행 능력 (1-10점)</label>
+                      <label className="form-label">수행 능력 (1-10 points)</label>
                       <input
                         type="range"
                         min="1"
@@ -287,10 +290,10 @@ const COPMAssessment = () => {
                         onChange={(e) => updateProblem(problem.id, 'performance', parseInt(e.target.value))}
                         className="form-input"
                       />
-                      <div className="text-center">{problem.performance}점</div>
+                      <div className="text-center">{problem.performance} points</div>
                     </div>
                     <div>
-                      <label className="form-label">만족도 (1-10점)</label>
+                      <label className="form-label">만족도 (1-10 points)</label>
                       <input
                         type="range"
                         min="1"
@@ -299,7 +302,7 @@ const COPMAssessment = () => {
                         onChange={(e) => updateProblem(problem.id, 'satisfaction', parseInt(e.target.value))}
                         className="form-input"
                       />
-                      <div className="text-center">{problem.satisfaction}점</div>
+                      <div className="text-center">{problem.satisfaction} points</div>
                     </div>
                   </div>
                 </div>
@@ -316,7 +319,7 @@ const COPMAssessment = () => {
             </button>
             <button 
               className="btn ml-2" 
-              onClick={problems.length > 0 ? handleNext : () => alert('최소 하나의 문제 영역을 추가해주세요.')}
+              onClick={problems.length > 0 ? handleNext : () => alert('최소 하나의 문제 영역을 추가해주 years old요.')}
             >
               다음
             </button>
@@ -332,33 +335,33 @@ const COPMAssessment = () => {
     return (
       <div className="container">
         <div className="card">
-          <h3 className="text-center mb-4">COPM 평가 결과</h3>
+          <h3 className="text-center mb-4">COPM Assessment Results</h3>
           
           <div className="score-display">
             <div className="score-number">{scores.performance}</div>
-            <div className="score-label">수행 점수</div>
+            <div className="score-label">수행  points수</div>
           </div>
 
           <div className="score-display mt-4">
             <div className="score-number">{scores.satisfaction}</div>
-            <div className="score-label">만족도 점수</div>
+            <div className="score-label">만족도  points수</div>
           </div>
 
           <div className="grid grid-2">
             <div>
               <h4>환자 정보</h4>
               <p><strong>이름:</strong> {patientInfo.name}</p>
-              <p><strong>나이:</strong> {patientInfo.age}세</p>
-              <p><strong>성별:</strong> {patientInfo.gender}</p>
-              <p><strong>교육수준:</strong> {patientInfo.education}</p>
-              <p><strong>평가일:</strong> {patientInfo.date}</p>
-              <p><strong>평가자:</strong> {patientInfo.evaluator}</p>
+              <p><strong>Age:</strong> {patientInfo.age} years old</p>
+              <p><strong>Gender:</strong> {patientInfo.gender}</p>
+              <p><strong>Education:</strong> {patientInfo.education}</p>
+              <p><strong>Assessment Date:</strong> {patientInfo.date}</p>
+              <p><strong>Evaluator:</strong> {patientInfo.evaluator}</p>
             </div>
             <div>
-              <h4>문제 영역별 점수</h4>
+              <h4>문제 영역별  points수</h4>
               {problems.map((problem, index) => (
                 <p key={index}>
-                  <strong>{problem.area}:</strong> 수행 {problem.performance}점, 만족도 {problem.satisfaction}점
+                  <strong>{problem.area}:</strong> 수행 {problem.performance} points, 만족도 {problem.satisfaction} points
                 </p>
               ))}
             </div>

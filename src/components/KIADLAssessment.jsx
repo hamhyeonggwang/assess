@@ -16,7 +16,7 @@ const KIADLAssessment = () => {
     쇼핑: 0,
     음식준비: 0,
     집안일: 0,
-    세탁: 0,
+     years old탁: 0,
     교통수단이용: 0,
     약물관리: 0,
     금전관리: 0
@@ -27,16 +27,16 @@ const KIADLAssessment = () => {
     { key: '쇼핑', name: '쇼핑', description: '필요한 물건을 사는 능력' },
     { key: '음식준비', name: '음식준비', description: '음식을 준비하는 능력' },
     { key: '집안일', name: '집안일', description: '집안 청소 및 정리 능력' },
-    { key: '세탁', name: '세탁', description: '세탁물을 관리하는 능력' },
+    { key: ' years old탁', name: ' years old탁', description: ' years old탁물을 관리하는 능력' },
     { key: '교통수단이용', name: '교통수단이용', description: '대중교통을 이용하는 능력' },
     { key: '약물관리', name: '약물관리', description: '약물을 올바르게 복용하는 능력' },
     { key: '금전관리', name: '금전관리', description: '돈을 관리하고 계산하는 능력' }
   ]
 
   const scoreOptions = [
-    { value: 0, label: '0점 - 전혀 할 수 없음' },
-    { value: 1, label: '1점 - 도움이 필요함' },
-    { value: 2, label: '2점 - 독립적으로 수행 가능' }
+    { value: 0, label: '0 points - 전혀 할 수 없음' },
+    { value: 1, label: '1 points - 도움이 필요함' },
+    { value: 2, label: '2 points - 독립적으로 수행 가능' }
   ]
 
   const updateScore = (activity, score) => {
@@ -83,36 +83,39 @@ const KIADLAssessment = () => {
     }
     
     localStorage.setItem('kiadl-result', JSON.stringify(result))
-    alert(`K-IADL 평가가 완료되었습니다!\n총점: ${totalScore}점\n수준: ${interpretation.level}`)
+    alert(`K-IADL 평가가 완료되었습니다!\nTotal Score: ${totalScore} points\nLevel: ${interpretation.level}`)
   }
 
-  const generatePDF = () => {
-    const { jsPDF } = require('jspdf')
+  const generatePDF = async () => {
+    const { jsPDF } = await import('jspdf')
     const doc = new jsPDF()
+    
+    // 한글 폰트 설정
+    doc.setFont('helvetica')
     
     const totalScore = calculateTotalScore()
     const interpretation = getScoreInterpretation(totalScore)
     
     doc.setFontSize(16)
-    doc.text('K-IADL 평가 결과', 20, 20)
+    doc.text('K-IADL Assessment Results', 20, 20)
     
     doc.setFontSize(12)
-    doc.text(`환자명: ${patientInfo.name}`, 20, 40)
-    doc.text(`나이: ${patientInfo.age}세`, 20, 50)
-    doc.text(`성별: ${patientInfo.gender}`, 20, 60)
-    doc.text(`평가일: ${patientInfo.date}`, 20, 70)
-    doc.text(`평가자: ${patientInfo.evaluator}`, 20, 80)
+    doc.text(`Patient Name: ${patientInfo.name}`, 20, 40)
+    doc.text(`Age: ${patientInfo.age} years old`, 20, 50)
+    doc.text(`Gender: ${patientInfo.gender}`, 20, 60)
+    doc.text(`Assessment Date: ${patientInfo.date}`, 20, 70)
+    doc.text(`Evaluator: ${patientInfo.evaluator}`, 20, 80)
     
-    doc.text(`총점: ${totalScore}점`, 20, 100)
-    doc.text(`수준: ${interpretation.level}`, 20, 110)
-    doc.text(`설명: ${interpretation.description}`, 20, 120)
+    doc.text(`Total Score: ${totalScore} points`, 20, 100)
+    doc.text(`Level: ${interpretation.level}`, 20, 110)
+    doc.text(`Description: ${interpretation.description}`, 20, 120)
     
     let yPos = 140
-    doc.text('항목별 점수:', 20, yPos)
+    doc.text('항목별  points수:', 20, yPos)
     yPos += 10
     
     activities.forEach((activity, index) => {
-      doc.text(`${activity.name}: ${scores[activity.key]}점`, 20, yPos)
+      doc.text(`${activity.name}: ${scores[activity.key]} points`, 20, yPos)
       yPos += 8
     })
     
@@ -166,7 +169,7 @@ const KIADLAssessment = () => {
                 value={patientInfo.gender}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, gender: e.target.value }))}
               >
-                <option value="">선택하세요</option>
+                <option value="">선택하 years old요</option>
                 <option value="남성">남성</option>
                 <option value="여성">여성</option>
               </select>
@@ -206,8 +209,8 @@ const KIADLAssessment = () => {
         <div className="card">
           <h3 className="text-center mb-4">K-IADL 평가</h3>
           <p className="mb-4">
-            각 항목에 대해 환자의 수행 능력을 평가해주세요.<br/>
-            점수: 0점(전혀 할 수 없음) ~ 2점(독립적으로 수행 가능)
+            각 항목에 대해 환자의 수행 능력을 평가해주 years old요.<br/>
+             points수: 0 points(전혀 할 수 없음) ~ 2 points(독립적으로 수행 가능)
           </p>
 
           <div className="mb-4">
@@ -263,33 +266,33 @@ const KIADLAssessment = () => {
     return (
       <div className="container">
         <div className="card">
-          <h3 className="text-center mb-4">K-IADL 평가 결과</h3>
+          <h3 className="text-center mb-4">K-IADL Assessment Results</h3>
           
           <div className="score-display">
             <div className="score-number">{totalScore}</div>
-            <div className="score-label">총점 (16점 만점)</div>
+            <div className="score-label">총 points (16 points 만 points)</div>
           </div>
 
           <div className="card mt-4">
-            <h4>평가 결과</h4>
-            <p><strong>수준:</strong> {interpretation.level}</p>
-            <p><strong>설명:</strong> {interpretation.description}</p>
+            <h4>Assessment Results</h4>
+            <p><strong>Level:</strong> {interpretation.level}</p>
+            <p><strong>Description:</strong> {interpretation.description}</p>
           </div>
 
           <div className="grid grid-2">
             <div>
               <h4>환자 정보</h4>
               <p><strong>이름:</strong> {patientInfo.name}</p>
-              <p><strong>나이:</strong> {patientInfo.age}세</p>
-              <p><strong>성별:</strong> {patientInfo.gender}</p>
-              <p><strong>평가일:</strong> {patientInfo.date}</p>
-              <p><strong>평가자:</strong> {patientInfo.evaluator}</p>
+              <p><strong>Age:</strong> {patientInfo.age} years old</p>
+              <p><strong>Gender:</strong> {patientInfo.gender}</p>
+              <p><strong>Assessment Date:</strong> {patientInfo.date}</p>
+              <p><strong>Evaluator:</strong> {patientInfo.evaluator}</p>
             </div>
             <div>
-              <h4>항목별 점수</h4>
+              <h4>항목별  points수</h4>
               {activities.map((activity) => (
                 <p key={activity.key}>
-                  <strong>{activity.name}:</strong> {scores[activity.key]}점
+                  <strong>{activity.name}:</strong> {scores[activity.key]} points
                 </p>
               ))}
             </div>

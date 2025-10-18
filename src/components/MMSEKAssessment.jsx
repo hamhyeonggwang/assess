@@ -136,27 +136,30 @@ const MMSEKAssessment = () => {
     alert(`평가가 완료되었습니다!\n총점: ${score}/30점\n해석: ${interpretation.level}`)
   }
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     // PDF 생성 로직 (jspdf 사용)
-    const { jsPDF } = require('jspdf')
+    const { jsPDF } = await import('jspdf')
     const doc = new jsPDF()
+    
+    // 한글 폰트 설정
+    doc.setFont('helvetica')
     
     const score = calculateScore()
     const interpretation = getInterpretation(score)
     
     doc.setFontSize(16)
-    doc.text('MMSE-K 평가 결과', 20, 20)
+    doc.text('MMSE-K Assessment Results', 20, 20)
     
     doc.setFontSize(12)
-    doc.text(`환자명: ${patientInfo.name}`, 20, 40)
-    doc.text(`나이: ${patientInfo.age}세`, 20, 50)
-    doc.text(`성별: ${patientInfo.gender}`, 20, 60)
-    doc.text(`교육수준: ${patientInfo.education}`, 20, 70)
-    doc.text(`평가일: ${patientInfo.date}`, 20, 80)
-    doc.text(`평가자: ${patientInfo.evaluator}`, 20, 90)
+    doc.text(`Patient Name: ${patientInfo.name}`, 20, 40)
+    doc.text(`Age: ${patientInfo.age} years old`, 20, 50)
+    doc.text(`Gender: ${patientInfo.gender}`, 20, 60)
+    doc.text(`Education: ${patientInfo.education}`, 20, 70)
+    doc.text(`Assessment Date: ${patientInfo.date}`, 20, 80)
+    doc.text(`Evaluator: ${patientInfo.evaluator}`, 20, 90)
     
-    doc.text(`총점: ${score}/30점`, 20, 110)
-    doc.text(`해석: ${interpretation.level}`, 20, 120)
+    doc.text(`Total Score: ${score}/30 points`, 20, 110)
+    doc.text(`Interpretation: ${interpretation.level}`, 20, 120)
     
     doc.save(`MMSE-K_${patientInfo.name}_${patientInfo.date}.pdf`)
   }

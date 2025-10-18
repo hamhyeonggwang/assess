@@ -137,39 +137,47 @@ const CDTAssessment = () => {
     const { jsPDF } = await import('jspdf')
     const doc = new jsPDF()
     
+    // 한글 폰트 설정 (기본 폰트 사용)
+    doc.setFont('helvetica')
+    
     const totalScore = calculateTotalScore()
     const interpretation = getScoreInterpretation(totalScore)
     
+    // 제목
     doc.setFontSize(16)
-    doc.text('Clock Drawing Test 결과', 20, 20)
+    doc.text('Clock Drawing Test Results', 20, 20)
     
+    // 환자 정보
     doc.setFontSize(12)
-    doc.text(`환자명: ${patientInfo.name}`, 20, 40)
-    doc.text(`나이: ${patientInfo.age}세`, 20, 50)
-    doc.text(`성별: ${patientInfo.gender}`, 20, 60)
-    doc.text(`교육수준: ${patientInfo.education}`, 20, 70)
-    doc.text(`평가일: ${patientInfo.date}`, 20, 80)
-    doc.text(`평가자: ${patientInfo.evaluator}`, 20, 90)
+    doc.text(`Patient Name: ${patientInfo.name}`, 20, 40)
+    doc.text(`Age: ${patientInfo.age} years old`, 20, 50)
+    doc.text(`Gender: ${patientInfo.gender}`, 20, 60)
+    doc.text(`Education: ${patientInfo.education}`, 20, 70)
+    doc.text(`Assessment Date: ${patientInfo.date}`, 20, 80)
+    doc.text(`Evaluator: ${patientInfo.evaluator}`, 20, 90)
     
-    doc.text(`총점: ${totalScore}점 (4점 만점)`, 20, 110)
-    doc.text(`수준: ${interpretation.level}`, 20, 120)
-    doc.text(`설명: ${interpretation.description}`, 20, 130)
+    // 결과
+    doc.text(`Total Score: ${totalScore} points (out of 4)`, 20, 110)
+    doc.text(`Level: ${interpretation.level}`, 20, 120)
+    doc.text(`Description: ${interpretation.description}`, 20, 130)
     
+    // 항목별 점수
     let yPos = 150
-    doc.text('항목별 점수:', 20, yPos)
+    doc.text('Item Scores:', 20, yPos)
     yPos += 10
     
-    doc.text(`시계원: ${scores.시계원}점`, 20, yPos)
+    doc.text(`Clock Circle: ${scores.시계원} points`, 20, yPos)
     yPos += 8
-    doc.text(`숫자배치: ${scores.숫자배치}점`, 20, yPos)
+    doc.text(`Number Placement: ${scores.숫자배치} points`, 20, yPos)
     yPos += 8
-    doc.text(`시침분침: ${scores.시침분침}점`, 20, yPos)
+    doc.text(`Hands: ${scores.시침분침} points`, 20, yPos)
     yPos += 8
-    doc.text(`시간설정: ${scores.시간설정}점`, 20, yPos)
+    doc.text(`Time Setting: ${scores.시간설정} points`, 20, yPos)
     
+    // 그린 시계 이미지
     if (canvasData) {
       yPos += 20
-      doc.text('그린 시계:', 20, yPos)
+      doc.text('Drawn Clock:', 20, yPos)
       yPos += 10
       doc.addImage(canvasData, 'PNG', 20, yPos, 100, 100)
     }
