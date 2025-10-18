@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Download, Upload } from 'lucide-react'
+import { Download, Upload, ArrowLeft, ArrowRight } from 'lucide-react'
 import { exportToGoogleSheets } from '../utils/googleSheets'
 
 const WHODASAssessment = () => {
   const [currentStep, setCurrentStep] = useState(0)
-  const [answers, setAnswers] = useState({})
+  const [version, setVersion] = useState('12-item') // 12-item 또는 36-item
+  const [assessmentType, setAssessmentType] = useState('self') // self, interviewer, proxy
   const [patientInfo, setPatientInfo] = useState({
     name: '',
     age: '',
@@ -13,120 +14,133 @@ const WHODASAssessment = () => {
     date: new Date().toISOString().split('T')[0],
     evaluator: ''
   })
+  const [answers, setAnswers] = useState({})
+  const [additionalInfo, setAdditionalInfo] = useState({
+    daysPresent: '',
+    daysUnable: '',
+    daysReduced: ''
+  })
 
-  const domains = [
+  // 12-항목 버전 문항
+  const questions12 = [
     {
-      id: 'cognition',
-      title: '인지 영역 (Cognition)',
-      questions: [
-        { id: 'cog1', text: '집중하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'cog2', text: '새로운 정보를 기억하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'cog3', text: '문제를 해결하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'cog4', text: '새로운 작업을 배우는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'cog5', text: '일반적으로 상황을 이해하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'cog6', text: '대화를 시작하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] }
-      ]
+      id: 'S1',
+      text: '30분 동안 서 있기와 같이 장시간 서있기',
+      domain: 'mobility'
     },
     {
-      id: 'mobility',
-      title: '이동 영역 (Mobility)',
-      questions: [
-        { id: 'mob1', text: '서 있는 자 years old를 유지하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'mob2', text: '집 안에서 움직이는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'mob3', text: '집 밖으로 나가는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'mob4', text: '집에서 멀리 떨어진 곳까지 가는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] }
-      ]
+      id: 'S2', 
+      text: '가정의 책임을 돌보기',
+      domain: 'life_activities'
     },
     {
-      id: 'self_care',
-      title: '자가관리 영역 (Self-care)',
-      questions: [
-        { id: 'sc1', text: '씻고 몸을 단정히 하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'sc2', text: '옷을 입는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'sc3', text: '식사를 하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'sc4', text: '혼자서 살아가는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] }
-      ]
+      id: 'S3',
+      text: '새로운 작업을 배우기 (예: 새로운 장소로 가는 방법을 배우기)',
+      domain: 'cognition'
     },
     {
-      id: 'getting_along',
-      title: '사람들과 어울리기 영역 (Getting along)',
-      questions: [
-        { id: 'ga1', text: '다른 사람들과 어울리는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'ga2', text: '친밀한 관계를 유지하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'ga3', text: '새로운 친구를 사귀는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'ga4', text: '성적 활동에 참여하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] }
-      ]
+      id: 'S4',
+      text: '다른 사람들과 동일한 방식으로 지역사회 활동에 참여하기 (예: 축제, 종교 또는 기타 활동)',
+      domain: 'participation'
     },
     {
-      id: 'life_activities',
-      title: '생활활동 영역 (Life activities)',
-      questions: [
-        { id: 'la1', text: '일상적인 가사일을 하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'la2', text: '일을 잘 완수하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'la3', text: '일의 양을 조절하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'la4', text: '일의 질을 유지하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] }
-      ]
+      id: 'S5',
+      text: '건강 문제로 인해 정서적으로 얼마나 영향을 받았습니까?',
+      domain: 'cognition'
     },
     {
-      id: 'participation',
-      title: '사회참여 영역 (Participation)',
-      questions: [
-        { id: 'part1', text: '사회적 활동에 참여하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'part2', text: '사회적 역할을 수행하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'part3', text: '사회적 상황에서 자신을 표현하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] },
-        { id: 'part4', text: '사회적 관계를 유지하는 데 어려움이 있습니까?', points: [1, 2, 3, 4, 5] }
-      ]
+      id: 'S6',
+      text: '10분 동안 무언가에 집중하기',
+      domain: 'cognition'
+    },
+    {
+      id: 'S7',
+      text: '1킬로미터와 같은 먼 거리 걷기',
+      domain: 'mobility'
+    },
+    {
+      id: 'S8',
+      text: '온몸 씻기',
+      domain: 'self_care'
+    },
+    {
+      id: 'S9',
+      text: '옷 입기',
+      domain: 'self_care'
+    },
+    {
+      id: 'S10',
+      text: '모르는 사람들과 대화하기',
+      domain: 'getting_along'
+    },
+    {
+      id: 'S11',
+      text: '우정 유지하기',
+      domain: 'getting_along'
+    },
+    {
+      id: 'S12',
+      text: '일상적인 일/학교 업무',
+      domain: 'life_activities'
     }
   ]
 
-  const handleAnswerChange = (questionId, value) => {
+  const responseOptions = [
+    { value: 0, label: '전혀 어려움 없음' },
+    { value: 1, label: '약간의 어려움' },
+    { value: 2, label: '보통의 어려움' },
+    { value: 3, label: '심한 어려움' },
+    { value: 4, label: '극심한 어려움 또는 전혀 할 수 없음' }
+  ]
+
+  const updateAnswer = (questionId, value) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value
     }))
   }
 
-  const calculateDomainScore = (domain) => {
-    let totalScore = 0
-    let answeredQuestions = 0
+  const calculateScore = () => {
+    const scores = Object.values(answers).filter(score => score !== undefined)
+    if (scores.length === 0) return 0
     
-    domain.questions.forEach(question => {
-      if (answers[question.id] !== undefined) {
-        totalScore += parseInt(answers[question.id])
-        answeredQuestions++
+    const totalScore = scores.reduce((sum, score) => sum + score, 0)
+    const maxScore = questions12.length * 4 // 12개 문항 × 4점
+    const percentage = Math.round((totalScore / maxScore) * 100 * 100) / 100
+    
+    return { totalScore, maxScore, percentage }
+  }
+
+  const getScoreInterpretation = (percentage) => {
+    if (percentage <= 10) {
+      return { 
+        level: '경미한 장애', 
+        description: '일상생활에 경미한 영향이 있습니다.',
+        color: '#28a745'
       }
-    })
-    
-    if (answeredQuestions === 0) return 0
-    return Math.round((totalScore / answeredQuestions) * 100) / 100
-  }
-
-  const calculateOverallScore = () => {
-    let totalScore = 0
-    let totalQuestions = 0
-    
-    domains.forEach(domain => {
-      domain.questions.forEach(question => {
-        if (answers[question.id] !== undefined) {
-          totalScore += parseInt(answers[question.id])
-          totalQuestions++
-        }
-      })
-    })
-    
-    if (totalQuestions === 0) return 0
-    return Math.round((totalScore / totalQuestions) * 100) / 100
-  }
-
-  const getSeverityLevel = (score) => {
-    if (score <= 1.5) return { level: '경미', color: '#28a745' }
-    if (score <= 2.5) return { level: '경도', color: '#ffc107' }
-    if (score <= 3.5) return { level: '중등도', color: '#fd7e14' }
-    return { level: '중증', color: '#dc3545' }
+    } else if (percentage <= 25) {
+      return { 
+        level: '경도 장애', 
+        description: '일상생활에 경도의 영향이 있습니다.',
+        color: '#ffc107'
+      }
+    } else if (percentage <= 50) {
+      return { 
+        level: '중등도 장애', 
+        description: '일상생활에 중등도의 영향이 있습니다.',
+        color: '#fd7e14'
+      }
+    } else {
+      return { 
+        level: '중증 장애', 
+        description: '일상생활에 중증의 영향이 있습니다.',
+        color: '#dc3545'
+      }
+    }
   }
 
   const handleNext = () => {
-    if (currentStep < domains.length - 1) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1)
     }
   }
@@ -138,23 +152,24 @@ const WHODASAssessment = () => {
   }
 
   const handleSubmit = () => {
-    const overallScore = calculateOverallScore()
-    const severity = getSeverityLevel(overallScore)
+    const { totalScore, maxScore, percentage } = calculateScore()
+    const interpretation = getScoreInterpretation(percentage)
     
     const result = {
+      version,
+      assessmentType,
       patientInfo,
       answers,
-      domainScores: domains.map(domain => ({
-        domain: domain.title,
-        score: calculateDomainScore(domain)
-      })),
-      overallScore,
-      severity,
+      additionalInfo,
+      totalScore,
+      maxScore,
+      percentage,
+      interpretation,
       timestamp: new Date().toISOString()
     }
     
     localStorage.setItem('whodas-result', JSON.stringify(result))
-    alert(`WHODAS 2.0 평가가 완료되었습니다!\n전체  points수: ${overallScore}\n장애 Level: ${severity.level}`)
+    alert(`WHODAS 2.0 평가가 완료되었습니다!\n총점: ${totalScore}/${maxScore}점\n백분율: ${percentage}%\n수준: ${interpretation.level}`)
   }
 
   const generatePDF = async () => {
@@ -164,12 +179,14 @@ const WHODASAssessment = () => {
     // 한글 폰트 설정
     doc.setFont('helvetica')
     
-    const overallScore = calculateOverallScore()
-    const severity = getSeverityLevel(overallScore)
+    const { totalScore, maxScore, percentage } = calculateScore()
+    const interpretation = getScoreInterpretation(percentage)
     
+    // 제목
     doc.setFontSize(16)
     doc.text('WHODAS 2.0 Assessment Results', 20, 20)
     
+    // 환자 정보
     doc.setFontSize(12)
     doc.text(`Patient Name: ${patientInfo.name}`, 20, 40)
     doc.text(`Age: ${patientInfo.age} years old`, 20, 50)
@@ -177,36 +194,53 @@ const WHODASAssessment = () => {
     doc.text(`Education: ${patientInfo.education}`, 20, 70)
     doc.text(`Assessment Date: ${patientInfo.date}`, 20, 80)
     doc.text(`Evaluator: ${patientInfo.evaluator}`, 20, 90)
+    doc.text(`Version: ${version === '12-item' ? '12-Item Version' : '36-Item Version'}`, 20, 100)
+    doc.text(`Assessment Type: ${assessmentType === 'self' ? 'Self-Report' : assessmentType === 'interviewer' ? 'Interviewer-Administered' : 'Proxy-Report'}`, 20, 110)
     
-    doc.text(`전체  points수: ${overallScore}`, 20, 110)
-    doc.text(`장애 Level: ${severity.level}`, 20, 120)
+    // 결과
+    doc.text(`Total Score: ${totalScore}/${maxScore} points`, 20, 130)
+    doc.text(`Percentage: ${percentage}%`, 20, 140)
+    doc.text(`Level: ${interpretation.level}`, 20, 150)
+    doc.text(`Description: ${interpretation.description}`, 20, 160)
     
-    let yPos = 140
-    doc.text('영역별  points수:', 20, yPos)
+    // 문항별 점수
+    let yPos = 180
+    doc.text('Item Scores:', 20, yPos)
     yPos += 10
     
-    domains.forEach(domain => {
-      const domainScore = calculateDomainScore(domain)
-      doc.text(`${domain.title}: ${domainScore}`, 20, yPos)
-      yPos += 10
+    questions12.forEach((question, index) => {
+      const score = answers[question.id] || 0
+      doc.text(`${question.id}: ${score} points`, 20, yPos)
+      yPos += 6
     })
+    
+    // 추가 정보
+    yPos += 10
+    doc.text('Additional Information:', 20, yPos)
+    yPos += 10
+    doc.text(`Days difficulties present: ${additionalInfo.daysPresent}`, 20, yPos)
+    yPos += 6
+    doc.text(`Days totally unable: ${additionalInfo.daysUnable}`, 20, yPos)
+    yPos += 6
+    doc.text(`Days reduced activities: ${additionalInfo.daysReduced}`, 20, yPos)
     
     doc.save(`WHODAS_${patientInfo.name}_${patientInfo.date}.pdf`)
   }
 
   const exportToSheets = async () => {
-    const overallScore = calculateOverallScore()
-    const severity = getSeverityLevel(overallScore)
+    const { totalScore, maxScore, percentage } = calculateScore()
+    const interpretation = getScoreInterpretation(percentage)
     
     const result = {
+      version,
+      assessmentType,
       patientInfo,
       answers,
-      domainScores: domains.map(domain => ({
-        domain: domain.title,
-        score: calculateDomainScore(domain)
-      })),
-      overallScore,
-      severity,
+      additionalInfo,
+      totalScore,
+      maxScore,
+      percentage,
+      interpretation,
       timestamp: new Date().toISOString()
     }
     
@@ -218,7 +252,75 @@ const WHODASAssessment = () => {
     return (
       <div className="container">
         <div className="card">
-          <h3 className="text-center mb-4">환자 정보 입력</h3>
+          <h3 className="text-center mb-4">WHODAS 2.0 평가 설정</h3>
+          
+          <div className="mb-4">
+            <h4>버전 선택</h4>
+            <div className="grid grid-2">
+              <label className="form-label">
+                <input
+                  type="radio"
+                  name="version"
+                  value="12-item"
+                  checked={version === '12-item'}
+                  onChange={(e) => setVersion(e.target.value)}
+                  className="mr-2"
+                />
+                12-항목 버전
+              </label>
+              <label className="form-label">
+                <input
+                  type="radio"
+                  name="version"
+                  value="36-item"
+                  checked={version === '36-item'}
+                  onChange={(e) => setVersion(e.target.value)}
+                  className="mr-2"
+                />
+                36-항목 버전
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h4>평가 방식 선택</h4>
+            <div className="grid grid-3">
+              <label className="form-label">
+                <input
+                  type="radio"
+                  name="assessmentType"
+                  value="self"
+                  checked={assessmentType === 'self'}
+                  onChange={(e) => setAssessmentType(e.target.value)}
+                  className="mr-2"
+                />
+                자가 기입식
+              </label>
+              <label className="form-label">
+                <input
+                  type="radio"
+                  name="assessmentType"
+                  value="interviewer"
+                  checked={assessmentType === 'interviewer'}
+                  onChange={(e) => setAssessmentType(e.target.value)}
+                  className="mr-2"
+                />
+                면접관 기입식
+              </label>
+              <label className="form-label">
+                <input
+                  type="radio"
+                  name="assessmentType"
+                  value="proxy"
+                  checked={assessmentType === 'proxy'}
+                  onChange={(e) => setAssessmentType(e.target.value)}
+                  className="mr-2"
+                />
+                대리인 기입식
+              </label>
+            </div>
+          </div>
+
           <div className="grid grid-2">
             <div className="form-group">
               <label className="form-label">환자명</label>
@@ -245,7 +347,7 @@ const WHODASAssessment = () => {
                 value={patientInfo.gender}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, gender: e.target.value }))}
               >
-                <option value="">선택하 years old요</option>
+                <option value="">선택하세요</option>
                 <option value="남성">남성</option>
                 <option value="여성">여성</option>
               </select>
@@ -257,7 +359,7 @@ const WHODASAssessment = () => {
                 value={patientInfo.education}
                 onChange={(e) => setPatientInfo(prev => ({ ...prev, education: e.target.value }))}
               >
-                <option value="">선택하 years old요</option>
+                <option value="">선택하세요</option>
                 <option value="무학">무학</option>
                 <option value="초등학교">초등학교</option>
                 <option value="중학교">중학교</option>
@@ -285,6 +387,7 @@ const WHODASAssessment = () => {
               />
             </div>
           </div>
+          
           <div className="text-center mt-4">
             <button className="btn" onClick={() => setCurrentStep(1)}>
               평가 시작
@@ -295,43 +398,195 @@ const WHODASAssessment = () => {
     )
   }
 
-  if (currentStep === domains.length) {
-    const overallScore = calculateOverallScore()
-    const severity = getSeverityLevel(overallScore)
+  if (currentStep === 1) {
+    return (
+      <div className="container">
+        <div className="card">
+          <h3 className="text-center mb-4">WHODAS 2.0 - 12항목 버전, 자가 기입식</h3>
+          
+          <div className="mb-4">
+            <p className="mb-4">
+              본 설문지는 건강상태로 인해 겪는 어려움에 대한 질문들로 구성되어 있습니다. 
+              건강상태란 질환, 질병, 장기간 또는 단기간 지속되는 기타 건강문제, 손상, 
+              정신적 또는 정서적 문제 및 알코올이나 약물과 관련된 문제들을 포함합니다.
+            </p>
+            <p className="mb-4">
+              <strong>지난 30일 동안, 본인은 다음 항목에서 얼마나 어려움이 있었습니까?</strong>
+            </p>
+          </div>
+
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>문항</th>
+                  <th>내용</th>
+                  <th>점수</th>
+                </tr>
+              </thead>
+              <tbody>
+                {questions12.map((question, index) => (
+                  <tr key={question.id}>
+                    <td>{question.id}</td>
+                    <td>{question.text}</td>
+                    <td>
+                      <select
+                        className="form-select"
+                        value={answers[question.id] || ''}
+                        onChange={(e) => updateAnswer(question.id, parseInt(e.target.value))}
+                      >
+                        <option value="">선택하세요</option>
+                        {responseOptions.map(option => (
+                          <option key={option.value} value={option.value}>
+                            {option.value} - {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="text-center mt-4">
+            <button 
+              className="btn btn-secondary" 
+              onClick={handlePrevious}
+            >
+              <ArrowLeft size={20} />
+              이전
+            </button>
+            <button 
+              className="btn ml-2" 
+              onClick={handleNext}
+            >
+              다음
+              <ArrowRight size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (currentStep === 2) {
+    return (
+      <div className="container">
+        <div className="card">
+          <h3 className="text-center mb-4">추가 정보</h3>
+          
+          <div className="mb-4">
+            <h4>지난 30일 동안의 활동 제한</h4>
+          </div>
+
+          <div className="grid grid-1">
+            <div className="form-group">
+              <label className="form-label">
+                H1. 전체적으로 지난 30일 동안, 이러한 어려움이 며칠 동안 있었습니까?
+              </label>
+              <input
+                type="number"
+                className="form-input"
+                value={additionalInfo.daysPresent}
+                onChange={(e) => setAdditionalInfo(prev => ({ ...prev, daysPresent: e.target.value }))}
+                placeholder="0-30일"
+                min="0"
+                max="30"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label">
+                H2. 지난 30일 동안, 건강상태로 인해 평소 활동이나 일을 전혀 할 수 없었던 날이 며칠이었습니까?
+              </label>
+              <input
+                type="number"
+                className="form-input"
+                value={additionalInfo.daysUnable}
+                onChange={(e) => setAdditionalInfo(prev => ({ ...prev, daysUnable: e.target.value }))}
+                placeholder="0-30일"
+                min="0"
+                max="30"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label">
+                H3. 지난 30일 동안, 전혀 할 수 없었던 날을 제외하고, 건강상태로 인해 평소 활동이나 일을 줄이거나 축소한 날이 며칠이었습니까?
+              </label>
+              <input
+                type="number"
+                className="form-input"
+                value={additionalInfo.daysReduced}
+                onChange={(e) => setAdditionalInfo(prev => ({ ...prev, daysReduced: e.target.value }))}
+                placeholder="0-30일"
+                min="0"
+                max="30"
+              />
+            </div>
+          </div>
+
+          <div className="text-center mt-4">
+            <button 
+              className="btn btn-secondary" 
+              onClick={handlePrevious}
+            >
+              <ArrowLeft size={20} />
+              이전
+            </button>
+            <button 
+              className="btn ml-2" 
+              onClick={handleNext}
+            >
+              다음
+              <ArrowRight size={20} />
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (currentStep === 3) {
+    const { totalScore, maxScore, percentage } = calculateScore()
+    const interpretation = getScoreInterpretation(percentage)
     
     return (
       <div className="container">
         <div className="card">
-          <h3 className="text-center mb-4">WHODAS 2.0 Assessment Results</h3>
+          <h3 className="text-center mb-4">WHODAS 2.0 평가 결과</h3>
           
           <div className="score-display">
-            <div className="score-number">{overallScore}</div>
-            <div className="score-label">전체  points수</div>
-            <div style={{ color: severity.color, fontSize: '1.2rem', fontWeight: 'bold' }}>
-              {severity.level} 장애
-            </div>
+            <div className="score-number">{percentage}%</div>
+            <div className="score-label">장애 정도</div>
+          </div>
+
+          <div className="card mt-4" style={{ backgroundColor: interpretation.color + '20', borderColor: interpretation.color }}>
+            <h4>평가 결과</h4>
+            <p><strong>총점:</strong> {totalScore}/{maxScore}점</p>
+            <p><strong>백분율:</strong> {percentage}%</p>
+            <p><strong>수준:</strong> {interpretation.level}</p>
+            <p><strong>설명:</strong> {interpretation.description}</p>
           </div>
 
           <div className="grid grid-2">
             <div>
               <h4>환자 정보</h4>
               <p><strong>이름:</strong> {patientInfo.name}</p>
-              <p><strong>Age:</strong> {patientInfo.age} years old</p>
-              <p><strong>Gender:</strong> {patientInfo.gender}</p>
-              <p><strong>Education:</strong> {patientInfo.education}</p>
-              <p><strong>Assessment Date:</strong> {patientInfo.date}</p>
-              <p><strong>Evaluator:</strong> {patientInfo.evaluator}</p>
+              <p><strong>나이:</strong> {patientInfo.age}세</p>
+              <p><strong>성별:</strong> {patientInfo.gender}</p>
+              <p><strong>교육수준:</strong> {patientInfo.education}</p>
+              <p><strong>평가일:</strong> {patientInfo.date}</p>
+              <p><strong>평가자:</strong> {patientInfo.evaluator}</p>
+              <p><strong>버전:</strong> {version === '12-item' ? '12-항목 버전' : '36-항목 버전'}</p>
+              <p><strong>평가방식:</strong> {assessmentType === 'self' ? '자가 기입식' : assessmentType === 'interviewer' ? '면접관 기입식' : '대리인 기입식'}</p>
             </div>
             <div>
-              <h4>영역별  points수</h4>
-              {domains.map((domain, index) => {
-                const domainScore = calculateDomainScore(domain)
-                return (
-                  <p key={index}>
-                    <strong>{domain.title}:</strong> {domainScore}
-                  </p>
-                )
-              })}
+              <h4>추가 정보</h4>
+              <p><strong>어려움 있었던 날:</strong> {additionalInfo.daysPresent}일</p>
+              <p><strong>전혀 할 수 없었던 날:</strong> {additionalInfo.daysUnable}일</p>
+              <p><strong>활동을 줄인 날:</strong> {additionalInfo.daysReduced}일</p>
             </div>
           </div>
 
@@ -353,109 +608,7 @@ const WHODASAssessment = () => {
     )
   }
 
-  const currentDomain = domains[currentStep]
-
-  return (
-    <div className="container">
-      <div className="card">
-        <h3 className="text-center mb-4">{currentDomain.title}</h3>
-        
-        <div className="mb-4">
-          <div className="text-center">
-            <span>진행률: {currentStep + 1} / {domains.length}</span>
-          </div>
-        </div>
-
-        {currentDomain.questions.map((question, index) => (
-          <div key={question.id} className="mb-4">
-            <div className="form-group">
-              <label className="form-label">
-                {index + 1}. {question.text}
-              </label>
-              <div className="radio-group">
-                <div 
-                  className={`radio-item ${answers[question.id] === '1' ? 'selected' : ''}`}
-                  onClick={() => handleAnswerChange(question.id, '1')}
-                >
-                  <input 
-                    type="radio" 
-                    name={question.id} 
-                    checked={answers[question.id] === '1'}
-                    onChange={() => handleAnswerChange(question.id, '1')}
-                  />
-                  <span>전혀 어려움 없음 (1 points)</span>
-                </div>
-                <div 
-                  className={`radio-item ${answers[question.id] === '2' ? 'selected' : ''}`}
-                  onClick={() => handleAnswerChange(question.id, '2')}
-                >
-                  <input 
-                    type="radio" 
-                    name={question.id} 
-                    checked={answers[question.id] === '2'}
-                    onChange={() => handleAnswerChange(question.id, '2')}
-                  />
-                  <span>약간 어려움 (2 points)</span>
-                </div>
-                <div 
-                  className={`radio-item ${answers[question.id] === '3' ? 'selected' : ''}`}
-                  onClick={() => handleAnswerChange(question.id, '3')}
-                >
-                  <input 
-                    type="radio" 
-                    name={question.id} 
-                    checked={answers[question.id] === '3'}
-                    onChange={() => handleAnswerChange(question.id, '3')}
-                  />
-                  <span>보통 어려움 (3 points)</span>
-                </div>
-                <div 
-                  className={`radio-item ${answers[question.id] === '4' ? 'selected' : ''}`}
-                  onClick={() => handleAnswerChange(question.id, '4')}
-                >
-                  <input 
-                    type="radio" 
-                    name={question.id} 
-                    checked={answers[question.id] === '4'}
-                    onChange={() => handleAnswerChange(question.id, '4')}
-                  />
-                  <span>많이 어려움 (4 points)</span>
-                </div>
-                <div 
-                  className={`radio-item ${answers[question.id] === '5' ? 'selected' : ''}`}
-                  onClick={() => handleAnswerChange(question.id, '5')}
-                >
-                  <input 
-                    type="radio" 
-                    name={question.id} 
-                    checked={answers[question.id] === '5'}
-                    onChange={() => handleAnswerChange(question.id, '5')}
-                  />
-                  <span>매우 많이 어려움 (5 points)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        <div className="text-center mt-4">
-          <button 
-            className="btn btn-secondary" 
-            onClick={handlePrevious}
-            disabled={currentStep === 0}
-          >
-            이전
-          </button>
-          <button 
-            className="btn ml-2" 
-            onClick={currentStep === domains.length - 1 ? handleSubmit : handleNext}
-          >
-            {currentStep === domains.length - 1 ? '평가 완료' : '다음'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
+  return null
 }
 
 export default WHODASAssessment
